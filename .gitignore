@@ -4,6 +4,7 @@ target
 .temp
 node_modules
 .next
+.next1
 
 ### Java template
 # Compiled class file

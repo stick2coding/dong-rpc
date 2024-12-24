@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * 序列化接口
  */
-public interface Serializer {
+public interface DongSerializer {
 
     /**
      * 序列化

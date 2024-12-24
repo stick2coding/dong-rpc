@@ -3,8 +3,8 @@ package com.dong.dongrpc.server;
 import com.dong.dongrpc.model.RpcRequest;
 import com.dong.dongrpc.model.RpcResponse;
 import com.dong.dongrpc.registry.LocalRegistry;
+import com.dong.dongrpc.serializer.DongSerializer;
 import com.dong.dongrpc.serializer.JdkSerializer;
-import com.dong.dongrpc.serializer.Serializer;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -25,7 +25,7 @@ public class DongHttpServerHandler implements Handler<HttpServerRequest> {
     @Override
     public void handle(HttpServerRequest request) {
         // 指定序列化器
-        final Serializer serializer = new JdkSerializer();
+        final DongSerializer serializer = new JdkSerializer();
 
         System.out.println("请求进入自定义请求处理器 dongHttpServerHandler，开始处理...");
         // 记录日志
@@ -89,7 +89,7 @@ public class DongHttpServerHandler implements Handler<HttpServerRequest> {
      * @param serializer
      */
     private void doResponse(HttpServerRequest request,
-                            RpcResponse rpcResponse, Serializer serializer) {
+                            RpcResponse rpcResponse, DongSerializer serializer) {
         // 返回头
         HttpServerResponse httpServerResponse = request.response()
                 .putHeader("content-type", "application/json");

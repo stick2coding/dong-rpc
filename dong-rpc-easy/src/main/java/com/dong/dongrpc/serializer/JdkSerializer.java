@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * 使用java自带的序列化器来实现序列化接口
  */
-public class JdkSerializer implements Serializer{
+public class JdkSerializer implements DongSerializer {
 
     /**
      * 序列化

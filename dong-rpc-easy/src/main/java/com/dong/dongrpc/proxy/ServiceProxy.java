@@ -4,8 +4,8 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.dong.dongrpc.model.RpcRequest;
 import com.dong.dongrpc.model.RpcResponse;
+import com.dong.dongrpc.serializer.DongSerializer;
 import com.dong.dongrpc.serializer.JdkSerializer;
-import com.dong.dongrpc.serializer.Serializer;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ public class ServiceProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // 指定序列化器
-        Serializer serializer = new JdkSerializer();
+        DongSerializer serializer = new JdkSerializer();
 
         // 发请求
         RpcRequest rpcRequest = RpcRequest.builder()

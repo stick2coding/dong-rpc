@@ -4,8 +4,8 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.dong.dongrpc.model.RpcRequest;
 import com.dong.dongrpc.model.RpcResponse;
+import com.dong.dongrpc.serializer.DongSerializer;
 import com.dong.dongrpc.serializer.JdkSerializer;
-import com.dong.dongrpc.serializer.Serializer;
 import com.dong.example.common.model.User;
 import com.dong.example.common.service.UserService;
 
@@ -26,7 +26,7 @@ public class UserServiceProxy implements UserService {
     public User getUser(User user) {
 
         // 指定序列化器
-        Serializer serializer = new JdkSerializer();
+        DongSerializer serializer = new JdkSerializer();
 
         // 发请求
         RpcRequest rpcRequest = RpcRequest.builder()
@@ -56,7 +56,7 @@ public class UserServiceProxy implements UserService {
     @Override
     public User getUserById(int userId) {
         // 指定序列化器
-        Serializer serializer = new JdkSerializer();
+        DongSerializer serializer = new JdkSerializer();
 
         // 发请求
         RpcRequest rpcRequest = RpcRequest.builder()

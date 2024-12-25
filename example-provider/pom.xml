@@ -24,7 +24,7 @@
     <!-- 引入框架    -->
     <dependency>
       <groupId>com.dong</groupId>
-      <artifactId>dong-rpc-easy</artifactId>
+      <artifactId>dong-rpc-core</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <!--引入基础包（接口、实体类）    -->

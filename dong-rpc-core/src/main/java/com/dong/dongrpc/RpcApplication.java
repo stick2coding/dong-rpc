@@ -1,7 +1,10 @@
 package com.dong.dongrpc;
 
+import com.dong.dongrpc.config.RegistryConfig;
 import com.dong.dongrpc.config.RpcConfig;
 import com.dong.dongrpc.constant.RpcConstant;
+import com.dong.dongrpc.registry.DongRegistry;
+import com.dong.dongrpc.registry.RegistryFactory;
 import com.dong.dongrpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +22,12 @@ public class RpcApplication {
     private static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
         log.info("初始化配置文件: {}", rpcConfig);
+
+        // 连接注册中心
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        DongRegistry registry = RegistryFactory.getInstance(registryConfig.getRegistryType());
+        registry.init(registryConfig);
+        log.info("连接注册中心成功，config = {}", registryConfig);
     }
 
     public static void init(){

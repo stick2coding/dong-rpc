@@ -18,7 +18,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/io.vertx/vertx-core -->
@@ -65,6 +65,15 @@
       <artifactId>jackson-databind</artifactId>
       <version>2.13.4.2</version> <!-- 请使用最新的稳定版本 -->
     </dependency>
+
+
+    <!-- https://mvnrepository.com/artifact/io.etcd/jetcd-core -->
+    <dependency>
+      <groupId>io.etcd</groupId>
+      <artifactId>jetcd-core</artifactId>
+      <version>0.7.7</version>
+    </dependency>
+
 
 
   </dependencies>

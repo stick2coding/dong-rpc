@@ -28,6 +28,12 @@ public class RpcApplication {
         DongRegistry registry = RegistryFactory.getInstance(registryConfig.getRegistryType());
         registry.init(registryConfig);
         log.info("连接注册中心成功，config = {}", registryConfig);
+
+        // 注册shutdown Hook，在JVM退出前执行销毁方法
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            log.info("JVM即将退出，从注册中心注销服务...");
+            registry.destroy();
+        }));
     }
 
     public static void init(){

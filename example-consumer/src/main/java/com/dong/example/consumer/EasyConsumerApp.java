@@ -21,12 +21,16 @@ public class EasyConsumerApp
         // 使用动态代理获取对象
         UserService userService = ServiceProxyFactory.getProxy(UserService.class);
         // 调用接口
-        User newUser = userService.getUserById(2);
-        if (newUser == null){
-            System.out.println("newUser is null...");
-        }else {
-            System.out.println(newUser.getName());
+        for (int i = 0; i < 3; i++){
+            System.out.println("服务消费者调用第" + i + "次...");
+            User newUser = userService.getUserById(2);
+            if (newUser == null){
+                System.out.println("服务消费者调用第" + i + "次结果...newUser is null...");
+            }else {
+                System.out.println("服务消费者调用第" + i + "次结果" + newUser.getName());
+            }
         }
+
         System.out.println("测试服务消费结束...");
     }
 }

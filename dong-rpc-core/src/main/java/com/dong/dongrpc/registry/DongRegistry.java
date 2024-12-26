@@ -14,28 +14,38 @@ import java.util.List;
 public interface DongRegistry {
 
     /**
-     * 初始化注册中心
+     * 初始化注册中心（服务提供者，服务消费者均使用）
      * @param registryConfig
      */
     void init(RegistryConfig registryConfig);
 
 
     /**
-     * 服务端注册服务
+     * 服务端注册服务（服务提供者使用）
      * @param serviceMetaInfo
      */
     void register(ServiceMetaInfo serviceMetaInfo);
 
+    /**
+     * 心跳检测（服务提供者使用）
+     */
+    void heartbeat();
+
 
     /**
-     * 注销服务
+     * 注销服务（服务提供者使用）
      * @param serviceMetaInfo
      */
     void unRegister(ServiceMetaInfo serviceMetaInfo);
 
+    /**
+     * 服务销毁（服务提供者使用）
+     */
+    void destroy();
+
 
     /**
-     * 服务发现，通过服务名获取注册中心的服务列表
+     * 服务发现，通过服务名获取注册中心的服务列表（服务消费者使用）
      * @param serviceName
      * @return
      */
@@ -43,8 +53,13 @@ public interface DongRegistry {
 
 
     /**
-     * 服务销毁
+     * 监听服务（服务消费者使用）
+     * @param serviceKey
      */
-    void destroy();
+    void watch(String serviceKey);
+
+
+
+
 
 }

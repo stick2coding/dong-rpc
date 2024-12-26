@@ -20,6 +20,11 @@ public class RpcRequest implements Serializable {
     private String serviceName;
 
     /**
+     * 接口名称
+     */
+    private String intfaceName;
+
+    /**
      * 方法名称
      */
     private String methodName;

@@ -10,6 +10,8 @@ public interface RpcConstant {
      */
     String DEFAULT_CONFIG_PREFIX = "rpc";
 
+    String DEFAULT_REGISTRY_CONFIG_PREFIX = "registry";
+
     /**
      * 默认服务版本
      */

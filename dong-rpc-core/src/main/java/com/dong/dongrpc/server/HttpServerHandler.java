@@ -5,7 +5,6 @@ import com.dong.dongrpc.model.RpcRequest;
 import com.dong.dongrpc.model.RpcResponse;
 import com.dong.dongrpc.registry.LocalRegistry;
 import com.dong.dongrpc.serializer.DongSerializer;
-import com.dong.dongrpc.serializer.JdkSerializer;
 import com.dong.dongrpc.serializer.SerializerFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -18,7 +17,7 @@ import java.lang.reflect.Method;
 /**
  * http请求处理器
  */
-public class DongHttpServerHandler implements Handler<HttpServerRequest> {
+public class HttpServerHandler implements Handler<HttpServerRequest> {
 
     /**
      * 自定义请求处理器

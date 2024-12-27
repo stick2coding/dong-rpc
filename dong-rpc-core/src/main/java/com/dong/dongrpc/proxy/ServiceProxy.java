@@ -39,8 +39,6 @@ public class ServiceProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 指定序列化器（这里改用工厂获取）
-        DongSerializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializerType());
         // 通过注解的方式来获取到每个接口所属的服务名字
         Class<?> serviceClass = method.getDeclaringClass();
         DongRpcService dongRpcService = serviceClass.getAnnotation(DongRpcService.class);
@@ -99,12 +97,13 @@ public class ServiceProxy implements InvocationHandler {
     /**
      * 发送http请求
      * @param rpcRequest
-     * @param serializer
      * @param selectServiceMetaInfo
      * @return
      * @throws IOException
      */
-    private RpcResponse httpRequest(RpcRequest rpcRequest, DongSerializer serializer, ServiceMetaInfo selectServiceMetaInfo) throws IOException {
+    private RpcResponse httpRequest(RpcRequest rpcRequest, ServiceMetaInfo selectServiceMetaInfo) throws IOException {
+        // 指定序列化器（这里改用工厂获取）
+        DongSerializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializerType());
         // 序列化请求体
         byte[] bodyBytes = serializer.serialize(rpcRequest);
         // 接收返回值

@@ -1,19 +1,18 @@
 package com.dong.dongrpc.server;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
 
 /**
  * 使用vertx来实现http服务器
  */
-public class VertxDongHttpServer implements DongHttpServer {
+public class VertxHttpServer implements HttpServer {
     @Override
     public void doStart(int port) {
         // 创建实例
         Vertx vertx = Vertx.vertx();
 
         // 创建HTTP服务器
-        HttpServer httpServer = vertx.createHttpServer();
+        io.vertx.core.http.HttpServer httpServer = vertx.createHttpServer();
 
         // 配置一个请求处理器
 //        httpServer.requestHandler(req -> {
@@ -26,7 +25,7 @@ public class VertxDongHttpServer implements DongHttpServer {
 //                    .end("Hello World! from vert.x http server");
 //        });
         // 更换为自定义的请求处理器
-        httpServer.requestHandler(new DongHttpServerHandler());
+        httpServer.requestHandler(new HttpServerHandler());
 
         // 启动服务器并监听端口
         httpServer.listen(port, result -> {

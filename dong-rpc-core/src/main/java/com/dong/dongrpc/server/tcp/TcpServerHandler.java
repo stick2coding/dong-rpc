@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 /**
  * tcp协议下的请求处理器
  */
-public class DongTcpServerHandler implements Handler<NetSocket> {
+public class TcpServerHandler implements Handler<NetSocket> {
 
     /**
      * 入口,从socket进行处理

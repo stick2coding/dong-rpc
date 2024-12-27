@@ -1,8 +1,8 @@
 package com.dong.example.provider;
 
 import com.dong.dongrpc.registry.LocalRegistry;
-import com.dong.dongrpc.server.DongHttpServer;
-import com.dong.dongrpc.server.VertxDongHttpServer;
+import com.dong.dongrpc.server.HttpServer;
+import com.dong.dongrpc.server.VertxHttpServer;
 import com.dong.example.common.service.UserService;
 import com.dong.example.provider.service.impl.UserServiceImpl;
 
@@ -20,8 +20,8 @@ public class EasyProviderApp
         LocalRegistry.register(UserService.class.getName(), UserServiceImpl.class);
 
         // 服务提供者引入RPC框架，然后启动rpc框架中的web服务器
-        DongHttpServer dongHttpServer = new VertxDongHttpServer();
-        dongHttpServer.doStart(8080);
+        HttpServer httpServer = new VertxHttpServer();
+        httpServer.doStart(8080);
 
     }
 }

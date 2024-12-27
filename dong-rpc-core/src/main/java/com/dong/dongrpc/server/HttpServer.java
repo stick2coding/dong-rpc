@@ -3,7 +3,7 @@ package com.dong.dongrpc.server;
 /**
  * http服务器接口
  */
-public interface DongHttpServer {
+public interface HttpServer {
 
     /**
      * 启动服务器

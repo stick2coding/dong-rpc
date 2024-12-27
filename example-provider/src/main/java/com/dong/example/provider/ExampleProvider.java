@@ -8,17 +8,12 @@ import com.dong.dongrpc.model.ServiceMetaInfo;
 import com.dong.dongrpc.registry.DongRegistry;
 import com.dong.dongrpc.registry.LocalRegistry;
 import com.dong.dongrpc.registry.RegistryFactory;
-import com.dong.dongrpc.server.DongHttpServer;
-import com.dong.dongrpc.server.DongTcpServer;
-import com.dong.dongrpc.server.VertxDongHttpServer;
+import com.dong.dongrpc.server.TcpServer;
 import com.dong.dongrpc.server.tcp.VertxTcpServer;
 import com.dong.dongrpc.utils.ConfigUtils;
-import com.dong.example.common.service.UserService;
 import com.dong.example.provider.config.ProviderConfig;
-import com.dong.example.provider.service.impl.UserServiceImpl;
 import org.reflections.Reflections;
 
-import java.util.ServiceLoader;
 import java.util.Set;
 
 public class ExampleProvider {
@@ -42,8 +37,8 @@ public class ExampleProvider {
 //        dongHttpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
 
         // 测试TCP服务
-        DongTcpServer dongTcpServer = new VertxTcpServer();
-        dongTcpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+        TcpServer tcpServer = new VertxTcpServer();
+        tcpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
     }
 
     /**

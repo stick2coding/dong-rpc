@@ -1,19 +1,17 @@
 package com.dong.dongrpc.server.test;
 
-import com.dong.dongrpc.server.DongTcpServer;
-import com.dong.dongrpc.server.tcp.DongTcpServerHandler;
+import com.dong.dongrpc.server.TcpServer;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetServer;
 import io.vertx.core.parsetools.RecordParser;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 之前用vertx实现的也是HTTP 服务端
  * 同样Vertx也支持tcp服务器
  */
-public class VertxTcpServerTest implements DongTcpServer {
+public class VertxTcpServerTest implements TcpServer {
 
 
     private byte[] handleRequest(byte[] requestData){

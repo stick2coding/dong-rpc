@@ -18,10 +18,16 @@ import java.lang.reflect.Method;
  * tcp协议下的请求处理器
  */
 public class DongTcpServerHandler implements Handler<NetSocket> {
+
+    /**
+     * 入口,从socket进行处理
+     * @param netSocket
+     */
     @Override
     public void handle(NetSocket netSocket) {
 
-        netSocket.handler(buffer -> {
+        //先进入装饰器处理buffer,然后拿到处理后的buffer，再进入自定义buffer处理器进行处理
+        TcpBufferHandlerWrapper handlerWrapper = new TcpBufferHandlerWrapper(buffer -> {
             System.out.println("Received request from client: " + buffer.toString());
             // 将请求数据转成java对象
             ProtocolMessage<RpcRequest> protocolMessage;
@@ -72,7 +78,8 @@ public class DongTcpServerHandler implements Handler<NetSocket> {
                 throw new RuntimeException("返回数据编码错误。。。");
             }
             System.out.println("本次请求执行完毕...");
-
         });
+
+        netSocket.handler(handlerWrapper);
     }
 }

@@ -1,4 +1,3 @@
 jdk=com.dong.dongrpc.serializer.JdkSerializer
 hessian=com.dong.dongrpc.serializer.HessianSerializer
-kryo=com.dong.dongrpc.serializer.KryoSerializer
 

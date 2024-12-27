@@ -9,7 +9,9 @@ import com.dong.dongrpc.registry.DongRegistry;
 import com.dong.dongrpc.registry.LocalRegistry;
 import com.dong.dongrpc.registry.RegistryFactory;
 import com.dong.dongrpc.server.DongHttpServer;
+import com.dong.dongrpc.server.DongTcpServer;
 import com.dong.dongrpc.server.VertxDongHttpServer;
+import com.dong.dongrpc.server.tcp.VertxTcpServer;
 import com.dong.dongrpc.utils.ConfigUtils;
 import com.dong.example.common.service.UserService;
 import com.dong.example.provider.config.ProviderConfig;
@@ -36,8 +38,12 @@ public class ExampleProvider {
         serviceRegistry();
 
         // 服务提供者引入RPC框架，然后启动rpc框架中的web服务器
-        DongHttpServer dongHttpServer = new VertxDongHttpServer();
-        dongHttpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+//        DongHttpServer dongHttpServer = new VertxDongHttpServer();
+//        dongHttpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+
+        // 测试TCP服务
+        DongTcpServer dongTcpServer = new VertxTcpServer();
+        dongTcpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
     }
 
     /**

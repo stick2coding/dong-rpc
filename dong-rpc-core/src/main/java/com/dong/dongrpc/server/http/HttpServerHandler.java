@@ -1,4 +1,4 @@
-package com.dong.dongrpc.server;
+package com.dong.dongrpc.server.http;
 
 import com.dong.dongrpc.RpcApplication;
 import com.dong.dongrpc.model.RpcRequest;

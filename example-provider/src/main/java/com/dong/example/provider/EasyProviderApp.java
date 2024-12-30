@@ -1,8 +1,8 @@
 package com.dong.example.provider;
 
 import com.dong.dongrpc.registry.LocalRegistry;
-import com.dong.dongrpc.server.HttpServer;
-import com.dong.dongrpc.server.VertxHttpServer;
+import com.dong.dongrpc.server.http.HttpServer;
+import com.dong.dongrpc.server.http.VertxHttpServer;
 import com.dong.example.common.service.UserService;
 import com.dong.example.provider.service.impl.UserServiceImpl;
 

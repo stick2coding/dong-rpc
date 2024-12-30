@@ -8,7 +8,7 @@ import com.dong.dongrpc.model.ServiceMetaInfo;
 import com.dong.dongrpc.registry.DongRegistry;
 import com.dong.dongrpc.registry.LocalRegistry;
 import com.dong.dongrpc.registry.RegistryFactory;
-import com.dong.dongrpc.server.TcpServer;
+import com.dong.dongrpc.server.tcp.TcpServer;
 import com.dong.dongrpc.server.tcp.VertxTcpServer;
 import com.dong.dongrpc.utils.ConfigUtils;
 import com.dong.example.provider.config.ProviderConfig;

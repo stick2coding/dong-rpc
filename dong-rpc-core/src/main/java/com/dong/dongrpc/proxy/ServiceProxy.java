@@ -7,6 +7,10 @@ import com.dong.dongrpc.RpcApplication;
 import com.dong.dongrpc.annotation.DongRpcService;
 import com.dong.dongrpc.config.RpcConfig;
 import com.dong.dongrpc.constant.RpcConstant;
+import com.dong.dongrpc.fault.retry.RetryStrategy;
+import com.dong.dongrpc.fault.retry.RetryStrategyFactory;
+import com.dong.dongrpc.loadbalancer.LoadBalancer;
+import com.dong.dongrpc.loadbalancer.LoadBalancerFactory;
 import com.dong.dongrpc.model.RpcRequest;
 import com.dong.dongrpc.model.RpcResponse;
 import com.dong.dongrpc.model.ServiceMetaInfo;
@@ -25,7 +29,9 @@ import io.vertx.core.net.NetSocket;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -55,14 +61,19 @@ public class ServiceProxy implements InvocationHandler {
                 .build();
 
         try {
-            // 寻找一个服务实例
-            ServiceMetaInfo selectServiceMetaInfo = providerServiceDiscoverAndSelect(serviceName);
+            // 寻找一个服务实例（加入负载均衡）
+            Map<String, Object> requestParams = new HashMap<>();
+            requestParams.put("interfaceName", interfaceName);
+            ServiceMetaInfo selectServiceMetaInfo = providerServiceDiscoverAndSelect(requestParams, serviceName);
 
             // 发送HTTP请求
             //RpcResponse rpcResponse = httpRequest(rpcRequest, serializer, selectServiceMetaInfo);
 
-            // 发送TCP请求
-            RpcResponse rpcResponse = VertxTcpClient.doTcpRequest(rpcRequest, selectServiceMetaInfo);
+            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(RpcApplication.getRpcConfig().getRetryStrategyType());
+            // 发送TCP请求（增加重试）
+            RpcResponse rpcResponse = retryStrategy.doRetry(
+                    () -> VertxTcpClient.doTcpRequest(rpcRequest, selectServiceMetaInfo));
+            //RpcResponse rpcResponse = VertxTcpClient.doTcpRequest(rpcRequest, selectServiceMetaInfo);
 
             return rpcResponse.getData();
         } catch (Exception e){
@@ -78,7 +89,7 @@ public class ServiceProxy implements InvocationHandler {
      * @param serviceName
      * @return
      */
-    private ServiceMetaInfo providerServiceDiscoverAndSelect(String serviceName) {
+    private ServiceMetaInfo providerServiceDiscoverAndSelect(Map<String, Object> obj, String serviceName) {
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
         // 引入注册中心
         // 拿到对应的注册中心实例
@@ -89,8 +100,10 @@ public class ServiceProxy implements InvocationHandler {
         seachServiceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
         // 搜索节点 key userService:1.0
         List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(seachServiceMetaInfo.getServiceKey());
-        // todo 负载均衡，这里先取第一个
-        ServiceMetaInfo selectServiceMetaInfo = serviceMetaInfoList.get(0);
+        // 负载均衡
+        LoadBalancer loadBalancer = LoadBalancerFactory.getInstance(rpcConfig.getLoadBalancerType());
+        ServiceMetaInfo selectServiceMetaInfo = loadBalancer.select(obj, serviceMetaInfoList);
+        //ServiceMetaInfo selectServiceMetaInfo = serviceMetaInfoList.get(0);
         return selectServiceMetaInfo;
     }
 

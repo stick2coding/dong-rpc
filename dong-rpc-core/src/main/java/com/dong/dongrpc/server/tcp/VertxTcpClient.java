@@ -86,6 +86,9 @@ public class VertxTcpClient {
                         socket.handler(handlerWrapper);
                     }else {
                         System.out.println("连接失败");
+                        // 这里抛出异常，是为了可以让重试策略捕获到异常，便于进行重试
+                        responseFuture.completeExceptionally(new RuntimeException("连接失败"));
+                        return;
                     }
                 });
 

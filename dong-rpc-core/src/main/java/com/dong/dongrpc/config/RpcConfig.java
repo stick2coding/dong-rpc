@@ -1,5 +1,7 @@
 package com.dong.dongrpc.config;
 
+import com.dong.dongrpc.fault.retry.RetryStrategyKeys;
+import com.dong.dongrpc.loadbalancer.LoadBalancerKeys;
 import com.dong.dongrpc.serializer.SerializerKeys;
 import lombok.Data;
 
@@ -35,6 +37,16 @@ public class RpcConfig {
      * 序列化器类型
      */
     private String serializerType = SerializerKeys.JDK_SERIALIZER;
+
+    /**
+     * 负载均衡类型
+     */
+    private String loadBalancerType = LoadBalancerKeys.ROUND_ROBIN;
+
+    /**
+     * 重试策略
+     */
+    private String retryStrategyType = RetryStrategyKeys.FIXED_INTERVAL;
 
     /**
      * 注册中心配置

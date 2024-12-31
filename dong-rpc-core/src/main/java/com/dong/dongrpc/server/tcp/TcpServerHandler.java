@@ -48,7 +48,7 @@ public class TcpServerHandler implements Handler<NetSocket> {
                 // 找到实现类
                 System.out.println("本次请求的服务名为：" + rpcRequest.getServiceName());
                 System.out.println("本次请求的接口名为：" + rpcRequest.getIntfaceName());
-                Class<?> implClass = LocalRegistry.get(rpcRequest.getIntfaceName());
+                Class<?> implClass = LocalRegistry.get(rpcRequest.getServiceName());
                 // 拿到对应的方法
                 Method method = implClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
                 System.out.println("本次请求的方法名为：" + rpcRequest.getMethodName());

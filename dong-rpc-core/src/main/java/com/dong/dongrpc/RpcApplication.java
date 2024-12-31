@@ -29,11 +29,17 @@ public class RpcApplication {
         registry.init(registryConfig);
         log.info("连接注册中心成功，config = {}", registryConfig);
 
-        // 注册shutdown Hook，在JVM退出前执行销毁方法
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            log.info("JVM即将退出，从注册中心注销服务...");
-            registry.destroy();
-        }));
+        boolean needServer = rpcConfig.isNeedServer();
+        if (needServer){
+            // 注册shutdown Hook，在JVM退出前执行销毁方法
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                log.info("JVM即将退出，从注册中心注销服务...");
+                registry.destroy();
+            }));
+        }else{
+            log.info("没有服务注册到注册中心，不需要注销服务");
+        }
+
     }
 
     public static void init(){

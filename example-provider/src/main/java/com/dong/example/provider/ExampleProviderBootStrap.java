@@ -2,9 +2,11 @@ package com.dong.example.provider;
 
 import com.dong.dongrpc.RpcApplication;
 import com.dong.dongrpc.annotation.DongRpcService;
+import com.dong.dongrpc.bootstrap.ProviderBootstrap;
 import com.dong.dongrpc.config.RegistryConfig;
 import com.dong.dongrpc.config.RpcConfig;
 import com.dong.dongrpc.model.ServiceMetaInfo;
+import com.dong.dongrpc.model.ServiceRegisterInfo;
 import com.dong.dongrpc.registry.DongRegistry;
 import com.dong.dongrpc.registry.LocalRegistry;
 import com.dong.dongrpc.registry.RegistryFactory;
@@ -14,31 +16,46 @@ import com.dong.dongrpc.utils.ConfigUtils;
 import com.dong.example.provider.config.ProviderConfig;
 import org.reflections.Reflections;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-public class ExampleProvider {
+public class ExampleProviderBootStrap {
 
     private static ProviderConfig providerConfig;
 
     public static void main( String[] args ) {
-        // 提供服务
-        System.out.println( "Hello! provider start success!" );
-        // 初始化RPC框架
-        RpcApplication.init();
+        providerConfig = ConfigUtils.loadConfig(ProviderConfig.class, "provider");
+        // 获取要注册的服务列表
+        List<ServiceRegisterInfo> serviceRegisterInfoList = loadAllServiceRegisterInfo();
 
-        // 提供者配置加载
-        LoadProviderConfig();
+        // 调用框架的初始化
+        ProviderBootstrap.init(serviceRegisterInfoList);
+    }
 
-        //服务注册
-        serviceRegistry();
-
-        // 服务提供者引入RPC框架，然后启动rpc框架中的web服务器
-//        DongHttpServer dongHttpServer = new VertxDongHttpServer();
-//        dongHttpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
-
-        // 测试TCP服务
-        TcpServer tcpServer = new VertxTcpServer();
-        tcpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+    private static List<ServiceRegisterInfo> loadAllServiceRegisterInfo() {
+        List<ServiceRegisterInfo> serviceRegisterInfoList = new ArrayList<>();
+        //获取当前项目的路径
+        Reflections reflections = new Reflections(providerConfig.getDongRpcServicePath());
+        Set<Class<?>> serviceClasses = reflections.getTypesAnnotatedWith(DongRpcService.class);
+        for (Class<?> serviceClass : serviceClasses) {
+            ServiceRegisterInfo serviceRegisterInfo = new ServiceRegisterInfo();
+            // 将自身的服务注册到注册中心（这里改为注解文件扫描的方式）
+            DongRpcService dongRpcService = serviceClass.getAnnotation(DongRpcService.class);
+            String serviceName = dongRpcService.name();
+            String serviceImplPath = dongRpcService.implPath();
+            Class<?> serviceImplClass = null;
+            try {
+                serviceImplClass = Class.forName(serviceImplPath);
+            } catch (ClassNotFoundException e) {
+                System.out.println("服务实现类未找到...");
+                continue;
+            }
+            serviceRegisterInfo.setServiceName(serviceName);
+            serviceRegisterInfo.setImplClass(serviceImplClass);
+            serviceRegisterInfoList.add(serviceRegisterInfo);
+        }
+        return serviceRegisterInfoList;
     }
 
     /**

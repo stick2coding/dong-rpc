@@ -1,5 +1,6 @@
 package com.dong.dongrpc.proxy;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -9,6 +10,8 @@ import com.dong.dongrpc.config.RpcConfig;
 import com.dong.dongrpc.constant.RpcConstant;
 import com.dong.dongrpc.fault.retry.RetryStrategy;
 import com.dong.dongrpc.fault.retry.RetryStrategyFactory;
+import com.dong.dongrpc.fault.tolerant.TolerantStrategy;
+import com.dong.dongrpc.fault.tolerant.TolerantStrategyFactory;
 import com.dong.dongrpc.loadbalancer.LoadBalancer;
 import com.dong.dongrpc.loadbalancer.LoadBalancerFactory;
 import com.dong.dongrpc.model.RpcRequest;
@@ -21,6 +24,7 @@ import com.dong.dongrpc.serializer.DongSerializer;
 import com.dong.dongrpc.serializer.SerializerFactory;
 import com.dong.dongrpc.server.tcp.TcpBufferHandlerWrapper;
 import com.dong.dongrpc.server.tcp.VertxTcpClient;
+import com.dong.dongrpc.utils.RequestUtils;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
@@ -29,6 +33,7 @@ import io.vertx.core.net.NetSocket;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.security.Provider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,39 +52,63 @@ public class ServiceProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // 通过注解的方式来获取到每个接口所属的服务名字
         Class<?> serviceClass = method.getDeclaringClass();
-        DongRpcService dongRpcService = serviceClass.getAnnotation(DongRpcService.class);
+        //DongRpcService dongRpcService = serviceClass.getAnnotation(DongRpcService.class);
         // 接口名称
         String interfaceName = method.getDeclaringClass().getName();
-        String serviceName = dongRpcService.name();
+        //String serviceName = dongRpcService.name();
+        String serviceName = interfaceName;
+        String serviceVersion = RpcConstant.DEFAULT_SERVICE_VERSION;
         // 发请求
         RpcRequest rpcRequest = RpcRequest.builder()
-                .serviceName(serviceName)
-                .intfaceName(interfaceName)
+                .serviceName(interfaceName)
+                //.intfaceName(interfaceName)
                 .methodName(method.getName())
                 .parameterTypes(method.getParameterTypes())
                 .args(args)
                 .build();
 
-        try {
-            // 寻找一个服务实例（加入负载均衡）
-            Map<String, Object> requestParams = new HashMap<>();
-            requestParams.put("interfaceName", interfaceName);
-            ServiceMetaInfo selectServiceMetaInfo = providerServiceDiscoverAndSelect(requestParams, serviceName);
+        // 负载均衡
+        // 寻找节点
+//        final ServiceMetaInfo selectServiceMetaInfo = providerServiceDiscoverAndSelect(requestParams, serviceName);
+        ServiceMetaInfo seachServiceMetaInfo = new ServiceMetaInfo();
+        seachServiceMetaInfo.setServiceName(serviceName);
+        seachServiceMetaInfo.setServiceVersion(serviceVersion);
+        List<ServiceMetaInfo> serviceMetaInfoList = RequestUtils.serviceDiscovery(seachServiceMetaInfo);
+        if (CollUtil.isEmpty(serviceMetaInfoList)){
+            throw new RuntimeException("没有发现服务节点");
+        }
+        // 选择节点
+        Map<String, Object> requestParams = new HashMap<>();
+        requestParams.put("interfaceName", interfaceName);
+        ServiceMetaInfo selectServiceMetaInfo = RequestUtils.serviceSelect(requestParams, serviceMetaInfoList);
+        if (selectServiceMetaInfo == null){
+            throw new RuntimeException("无法选择服务节点");
+        }
 
+        RpcResponse rpcResponse = new RpcResponse();
+        try {
             // 发送HTTP请求
             //RpcResponse rpcResponse = httpRequest(rpcRequest, serializer, selectServiceMetaInfo);
-
+            //RpcResponse rpcResponse = VertxTcpClient.doTcpRequest(rpcRequest, selectServiceMetaInfo);
+            // 获取重试策略
             RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(RpcApplication.getRpcConfig().getRetryStrategyType());
             // 发送TCP请求（增加重试）
-            RpcResponse rpcResponse = retryStrategy.doRetry(
+            rpcResponse = retryStrategy.doRetry(
                     () -> VertxTcpClient.doTcpRequest(rpcRequest, selectServiceMetaInfo));
-            //RpcResponse rpcResponse = VertxTcpClient.doTcpRequest(rpcRequest, selectServiceMetaInfo);
 
-            return rpcResponse.getData();
         } catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
+            // 出现异常之后，我们还要加入容错处理，先拿到容错策略
+            TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(RpcApplication.getRpcConfig().getTolerantStrategyType());
+            Map<String, Object> context = new HashMap<>();
+            // 请求内容
+            context.put("rpcRequest", rpcRequest);
+            // 出现异常的节点
+            context.put("selectServiceMetaInfo", selectServiceMetaInfo);
+            context.put("ServiceMetaInfoList", serviceMetaInfoList);
+            return tolerantStrategy.doTolerant(requestParams, e);
         }
-        return null;
+        return rpcResponse.getData();
     }
 
 

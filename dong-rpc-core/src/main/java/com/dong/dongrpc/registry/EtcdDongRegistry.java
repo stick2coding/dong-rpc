@@ -6,6 +6,7 @@ import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.json.JSONUtil;
+import com.dong.dongrpc.RpcApplication;
 import com.dong.dongrpc.config.RegistryConfig;
 import com.dong.dongrpc.model.ServiceMetaInfo;
 
@@ -125,8 +126,14 @@ public class EtcdDongRegistry implements DongRegistry{
         kvClient = client.getKVClient();
 
         // 同时，开启心跳维护，这部分实际上是给服务提供者用到
-        heartbeat();
-        log.info("开启心跳维护...");
+        boolean isNeedServer = RpcApplication.getRpcConfig().isNeedServer();
+        if(isNeedServer){
+            heartbeat();
+            log.info("开启心跳维护...");
+        }else{
+            log.info("不需要服务端，跳过心跳维护...");
+        }
+
     }
 
     @Override

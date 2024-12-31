@@ -1,6 +1,7 @@
 package com.dong.dongrpc.config;
 
 import com.dong.dongrpc.fault.retry.RetryStrategyKeys;
+import com.dong.dongrpc.fault.tolerant.TolerantStrategyKeys;
 import com.dong.dongrpc.loadbalancer.LoadBalancerKeys;
 import com.dong.dongrpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -34,6 +35,11 @@ public class RpcConfig {
     private boolean mock = false;
 
     /**
+     * 是否需要server
+     */
+    private boolean needServer = true;
+
+    /**
      * 序列化器类型
      */
     private String serializerType = SerializerKeys.JDK_SERIALIZER;
@@ -47,6 +53,11 @@ public class RpcConfig {
      * 重试策略
      */
     private String retryStrategyType = RetryStrategyKeys.FIXED_INTERVAL;
+
+    /**
+     * 容错策略
+     */
+    private String tolerantStrategyType = TolerantStrategyKeys.FAIL_FAST;
 
     /**
      * 注册中心配置

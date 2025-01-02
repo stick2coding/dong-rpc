@@ -24,7 +24,7 @@ public interface DongRegistry {
      * 服务端注册服务（服务提供者使用）
      * @param serviceMetaInfo
      */
-    void register(ServiceMetaInfo serviceMetaInfo);
+    void register(ServiceMetaInfo serviceMetaInfo) throws Exception;
 
     /**
      * 心跳检测（服务提供者使用）
@@ -57,8 +57,6 @@ public interface DongRegistry {
      * @param serviceKey
      */
     void watch(String serviceKey);
-
-
 
 
 

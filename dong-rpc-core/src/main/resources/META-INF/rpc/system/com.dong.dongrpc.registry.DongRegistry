@@ -1,1 +1,2 @@
 etcd=com.dong.dongrpc.registry.EtcdDongRegistry
+zookeeper=com.dong.dongrpc.registry.ZkDongRegistry

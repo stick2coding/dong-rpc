@@ -21,7 +21,7 @@ public class DongRegistryTest {
     }
 
     @Test
-    public void testRegister() {
+    public void testRegister() throws Exception {
         //1
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName("myService");
